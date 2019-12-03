@@ -5,24 +5,30 @@ using UnityEngine.UI;
 using BaiSingleton;
 using System;
 using System.IO;
+using UnityEditor;
 
 namespace BaiUISystem
 {
     public class UISystem : CSharpSingleton<UISystem>
     {
         public UISystemComponent uiCp;
-        public ShowViewSystem showhandler;
+        public ShowViewSystem showSystem;
         public UIPoolSystem poolSystem;
 
         public UISystem()
         {
             uiCp = new UISystemComponent();
-            showhandler = new ShowViewSystem();
+            poolSystem = new UIPoolSystem();
+            showSystem = new ShowViewSystem();
 
-            if (Directory.Exists(Application.dataPath + "/" + uiCp.UI_PATH) == false)
+#if UNITY_EDITOR
+            string folderName = Application.dataPath + "/Resources/" + uiCp.UI_PATH.Substring(0, uiCp.UI_PATH.Length - 1);
+            if (Directory.Exists(folderName) == false)
             {
-                Directory.CreateDirectory(Application.dataPath + "/" + uiCp.UI_PATH);
+                Directory.CreateDirectory(folderName);
+                AssetDatabase.Refresh();
             }
+#endif
         }
 
 
@@ -85,7 +91,7 @@ namespace BaiUISystem
         /// <summary>
         /// Open view with type
         /// </summary>
-        public GameObject OpenView(E_UIType type, bool single = false)
+        public GameObject OpenUI(E_UIType type, bool single = false)
         {
             GameObject _view;
 
@@ -97,7 +103,7 @@ namespace BaiUISystem
             // pop to front
             PopToFront(type);
 
-            showhandler.ShowView(_view);
+            showSystem.ShowView(_view);
 
             uiCp.lastMainView = type;
 
@@ -125,7 +131,7 @@ namespace BaiUISystem
                 int _order = uiCp.POP_WINDOW_ORDER;
                 switch (type)
                 {
-                    case E_UIType.PopWindowView:
+                    case E_UIType.PopupUI:
                         _order = uiCp.POP_WINDOW_ORDER;
                         break;
 
@@ -177,7 +183,7 @@ namespace BaiUISystem
                 int _order = 0;
                 switch (type)
                 {
-                    case E_UIType.PopWindowView:
+                    case E_UIType.PopupUI:
                         _order = 100;
                         break;
 
@@ -246,7 +252,7 @@ namespace BaiUISystem
             int _order = 0;
             foreach (var _c in uiCp.canvases.Keys)
             {
-                if (uiCp.canvases[_c].sortingOrder > _order && _c != E_UIType.PopWindowView)
+                if (uiCp.canvases[_c].sortingOrder > _order && _c != E_UIType.PopupUI)
                 {
                     _order = uiCp.canvases[_c].sortingOrder;
                 }
@@ -263,7 +269,7 @@ namespace BaiUISystem
                 int _minOrder = _dicSort.First<Canvas>().sortingOrder;
                 foreach (var _c in uiCp.canvases.Keys)
                 {
-                    if (_c != E_UIType.PopWindowView)
+                    if (_c != E_UIType.PopupUI)
                         uiCp.canvases[_c].sortingOrder -= _minOrder;
                 }
             }
@@ -280,7 +286,7 @@ namespace BaiUISystem
             {
                 var ui = GetUI(index);
 
-                showhandler.CloseView(ui);
+                showSystem.CloseView(ui);
                 RemoveUI(index);
 
                 CheckCanvasUsable(index);
@@ -321,7 +327,7 @@ namespace BaiUISystem
         public GameObject ReopenView(E_UIType type)
         {
             CloseUI(type);
-            return OpenView(type);
+            return OpenUI(type);
         }
     }
 }

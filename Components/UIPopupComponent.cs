@@ -5,7 +5,7 @@ namespace BaiUISystem
 {
     public enum E_PopupType
     {
-
+        defaultPop
     }
     
     public class PopupDatas

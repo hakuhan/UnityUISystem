@@ -5,7 +5,7 @@ namespace BaiUISystem
 {
     public enum E_UIType
     {
-        PopWindowView,
+        PopupUI,
         Max,
     }
 
