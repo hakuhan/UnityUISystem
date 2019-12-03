@@ -5,6 +5,7 @@ namespace BaiUISystem
 {
     public enum E_UIType
     {
+        MainUI,
         PopupUI,
         Max,
     }
