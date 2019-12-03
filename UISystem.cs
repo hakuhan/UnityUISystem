@@ -91,14 +91,14 @@ namespace BaiUISystem
         /// <summary>
         /// Open view with type
         /// </summary>
-        public GameObject OpenUI(E_UIType type, bool single = false)
+        public GameObject OpenUI(E_UIType type, bool singleton = false)
         {
             GameObject _view;
 
             // 重新排序
             ResetOrder();
 
-            _view = CreateUI(type);
+            _view = CreateUI(type, singleton);
 
             // pop to front
             PopToFront(type);
